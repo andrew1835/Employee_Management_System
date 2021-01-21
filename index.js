@@ -12,7 +12,7 @@ var connection = mysql.createConnection({
 
     // Your password
     password: "password",
-    // database: INSERT NAME HERE
+    database: "employees_db"
 });
 
 connection.connect(function (err) {
@@ -24,7 +24,7 @@ function runMain() {
     inquirer
         .prompt({
             name: "action",
-            type: "rawlist",
+            type: "list",
             message: "What would you like to do?",
             choices: [
                 "Add Employee",
