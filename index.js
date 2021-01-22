@@ -37,8 +37,10 @@ function runMain() {
                 "Add Role",
                 "Add Department",
                 "View All Employees",
-                "View All Employees by Department",
+                "View All Roles",
+                "View All Departments",
                 "View All Employees by Role",
+                "View All Employees by Department",
                 "Update Employee Information",
                 "Exit"
             ]
@@ -55,6 +57,12 @@ function runMain() {
             }
             else if (answer.action === "View All Employees") {
                 viewEmployees();
+            }
+            else if (answer.action === "View All Roles") {
+                viewRoles();
+            }
+            else if (answer.action === "View All Departments") {
+                viewDepartments();
             }
             else if (answer.action === "View All Employees by Department") {
                 viewEmployeesByDep();
@@ -163,7 +171,7 @@ function addDepartment() {
             connection.query(
                 "INSERT INTO departments SET ?",
                 {
-                    name: answer.departmentName
+                    department: answer.departmentName
                 },
                 function (err) {
                     if (err) throw err;
@@ -178,7 +186,29 @@ function addDepartment() {
 function viewEmployees() {
     // Will simply show a table that has all the employees. Just display the employees table.
     console.log("Showing all employees:\n");
-    connection.query("SELECT * FROM employee", function (err, res) {
+    connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, departments.department FROM ((employee JOIN role ON employee.role_id = role.id) JOIN departments ON role.department_id = departments.id)", function (err, res) {
+        if (err) throw err;
+        // Log all results of the SELECT statement
+        console.table(res);
+        connection.end();
+    });
+}
+
+function viewRoles() {
+    // Will simply show a table that has all the employees. Just display the employees table.
+    console.log("Showing all roles:\n");
+    connection.query("SELECT * FROM role", function (err, res) {
+        if (err) throw err;
+        // Log all results of the SELECT statement
+        console.table(res);
+        connection.end();
+    });
+}
+
+function viewDepartments() {
+    // Will simply show a table that has all the employees. Just display the employees table.
+    console.log("Showing all departments:\n");
+    connection.query("SELECT * FROM departments", function (err, res) {
         if (err) throw err;
         // Log all results of the SELECT statement
         console.table(res);
@@ -188,6 +218,7 @@ function viewEmployees() {
 
 function viewEmployeesByDep() {
     // Will show a joined table that has a column with departments and then another columns that matches the appropiate employees to the departments. Do it so they're all grouped together. For example, you might have a few rows where the department is "Intern" and it has the corresponding employees to the right, and then a few rows after that where the department is "Manager", etc.
+    // I think you'll have to do a triple join for this one
     console.log("Showing all employees by department:\n");
     connection.query("SELECT * FROM employee", function (err, res) {
         if (err) throw err;
@@ -200,12 +231,18 @@ function viewEmployeesByDep() {
 function viewEmployeesByRole() {
     // Will show a joined table similar to the one above, with the only difference being that the right column shows the roles instead of departments
     console.log("Showing all employees by role:\n");
-    connection.query("SELECT first_name, last_name, role_id FROM employee JOIN role ON employee.role_id = role.department_id", function (err, res) {
+    connection.query("SELECT employee.first_name, employee.last_name, role.title FROM employee JOIN role ON employee.role_id = role.id", function (err, res) {
         if (err) throw err;
         // Log all results of the SELECT statement
         console.table(res);
         connection.end();
     });
+    // connection.query("SELECT first_name, last_name, role_id FROM employee JOIN role ON employee.role_id = role.department_id", function (err, res) {
+    //     if (err) throw err;
+    //     // Log all results of the SELECT statement
+    //     console.table(res);
+    //     connection.end();
+    // });
 }
 
 function updateEmployeeInfo() {
@@ -272,6 +309,7 @@ function updateEmployeeInfo() {
 
 
 // Your work through line 70 is all good!
+// You only have the "View" functions left to write! Keep going, you can do it and you'll be so proud after! What you need to do is figure out which columns you need to join, and then find examples on the internet to see how they did it. Also, look at that flowchart diagram in assets!
 
 // TODO: Ask these questions in office hours:
 // How do I update based off both the first and last name, and not just one or the other?

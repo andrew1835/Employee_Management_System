@@ -4,7 +4,7 @@ USE employees_db;
 
 CREATE TABLE departments(
   id INTEGER AUTO_INCREMENT NOT NULL,
-  name VARCHAR(30),
+  department VARCHAR(30),
   PRIMARY KEY (id)
 );
 
