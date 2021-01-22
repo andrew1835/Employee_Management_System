@@ -132,6 +132,22 @@ function addRole() {
                 message: "What is the ID of the department this role belongs to?"
             }
         ])
+        .then(function (answer) {
+            connection.query(
+                "INSERT INTO role SET ?",
+                {
+                    title: answer.roleTitle,
+                    salary: answer.roleSalary,
+                    department_id: answer.department_ID
+                },
+                function (err) {
+                    if (err) throw err;
+                    console.log("The role was added successfuly!");
+                    // re-prompt the user for if they want to bid or post
+                    runMain();
+                }
+            );
+        });
 }
 
 function addDepartment() {
@@ -143,6 +159,20 @@ function addDepartment() {
                 message: "What is the name of the department?"
             }
         ])
+        .then(function (answer) {
+            connection.query(
+                "INSERT INTO departments SET ?",
+                {
+                    name: answer.departmentName
+                },
+                function (err) {
+                    if (err) throw err;
+                    console.log("The department was added successfuly!");
+                    // re-prompt the user for if they want to bid or post
+                    runMain();
+                }
+            );
+        });
 }
 
 function viewEmployees() {
