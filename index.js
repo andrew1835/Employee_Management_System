@@ -220,7 +220,7 @@ function viewEmployeesByDep() {
     // Will show a joined table that has a column with departments and then another columns that matches the appropiate employees to the departments. Do it so they're all grouped together. For example, you might have a few rows where the department is "Intern" and it has the corresponding employees to the right, and then a few rows after that where the department is "Manager", etc.
     // I think you'll have to do a triple join for this one
     console.log("Showing all employees by department:\n");
-    connection.query("SELECT * FROM employee", function (err, res) {
+    connection.query("SELECT employee.first_name, employee.last_name, departments.department FROM ((employee JOIN role ON employee.role_id = role.id) JOIN departments ON role.department_id = departments.id)", function (err, res) {
         if (err) throw err;
         // Log all results of the SELECT statement
         console.table(res);
