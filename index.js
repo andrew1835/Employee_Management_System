@@ -177,19 +177,94 @@ function addDepartment() {
 
 function viewEmployees() {
     // Will simply show a table that has all the employees. Just display the employees table.
+    console.log("Showing all employees:\n");
+    connection.query("SELECT * FROM employee", function (err, res) {
+        if (err) throw err;
+        // Log all results of the SELECT statement
+        console.table(res);
+        connection.end();
+    });
 }
 
 function viewEmployeesByDep() {
     // Will show a joined table that has a column with departments and then another columns that matches the appropiate employees to the departments. Do it so they're all grouped together. For example, you might have a few rows where the department is "Intern" and it has the corresponding employees to the right, and then a few rows after that where the department is "Manager", etc.
+    console.log("Showing all employees by department:\n");
+    connection.query("SELECT * FROM employee", function (err, res) {
+        if (err) throw err;
+        // Log all results of the SELECT statement
+        console.table(res);
+        connection.end();
+    });
 }
 
 function viewEmployeesByRole() {
     // Will show a joined table similar to the one above, with the only difference being that the right column shows the roles instead of departments
+    console.log("Showing all employees by role:\n");
+    connection.query("SELECT first_name, last_name, role_id FROM employee JOIN role ON employee.role_id = role.department_id", function (err, res) {
+        if (err) throw err;
+        // Log all results of the SELECT statement
+        console.table(res);
+        connection.end();
+    });
 }
 
 function updateEmployeeInfo() {
     // Here you will have an inquirer prompt with a type of list where the choices are all the employees that have been added. You will pull this by referencing the employees that you've added to your MySQL employee table. You can reference activities that utilize the U in CRUD to see how to do this. Can reference lines 97-129 for the part where you show a list of employees in inquirer, and can reference lines 132-150 for how to update (all referencing activity 10)
+    // Once they choose an option, they will be prompted by inquirer to update the employees new role and new manager id
+    // Not sure if you write the second two questions in the original prompt or in the .then
+    connection.query("SELECT * FROM employee", function (err, results) {
+        if (err) throw err;
+        inquirer
+            .prompt([
+                {
+                    name: "chooseEmployee",
+                    type: "list",
+                    message: "Which employee would you like to update?",
+                    choices: function () {
+                        var choiceArray = [];
+                        for (var i = 0; i < results.length; i++) {
+                            choiceArray.push(results[i].first_name)
+                            // choiceArray.push(results[i].first_name + " " + results[i].last_name)
+                            // The code directly above shows the first and last name, but I don't know how to grab that when updating, so I'm just using the first name
+                        }
+                        return choiceArray
+                    }
+                },
+                {
+                    name: "updateRole",
+                    type: "input",
+                    message: "What is the employee's new role ID?"
+                },
+                {
+                    name: "updateManager",
+                    type: "input",
+                    message: "What is the ID of the employee's new manager?"
+                }
+            ]
+            )
+            .then(function (answer) {
+                connection.query(
+                    "UPDATE employee SET ? WHERE ?",
+                    [
+                        {
+                            role_id: answer.updateRole,
+                            manager_id: answer.updateManager
+                        },
+                        {
+                            first_name: answer.chooseEmployee
+                        },
+                    ],
+                    function (err) {
+                        if (err) throw err;
+                        console.log("The employee was updated successfuly!");
+                        // re-prompt the user for if they want to bid or post
+                        runMain();
+                    }
+                );
+            });
+    })
 }
+
 
 
 
@@ -197,3 +272,6 @@ function updateEmployeeInfo() {
 
 
 // Your work through line 70 is all good!
+
+// TODO: Ask these questions in office hours:
+// How do I update based off both the first and last name, and not just one or the other?
